@@ -127,7 +127,7 @@ if len(filtered) > 0:
 
 # Header & Metrics
 filtered_count = len(filtered)
-st.subheader(f"Filtered Buildings: {filtered_count:,} (Out of {total_buildings_count:,})")
+st.subheader(f"Filtered Buildings: {filtered_count:,} (out of {total_buildings_count:,})")
 
 m_outer1, m_outer2, m_outer3, m_spacer = st.columns([1, 1, 1, 2], gap="small")
 with m_outer1:
@@ -138,6 +138,7 @@ with m_outer2:
     st.metric("Dynamic NPV", f"{filtered.get('dynamic_npv', filtered['npv_ghs']).mean():,.0f} GHS")
 with m_outer3:
     st.metric("Avg Priority Score", f"{filtered.get('priority_score', 50).mean():.1f}")
+    st.metric("Total Regional Potential", "~6,000+ GWh/yr")
 
 # Download Data
 csv = filtered[['building_id', 'suitability_score', 'solar_index', 'solar_class', 'solar_adjusted_kwh_final', 'payback_years', 'dynamic_payback', 'npv_ghs', 'dynamic_npv', 'priority_score', 'co2_savings_tonnes']].to_csv(index=False)
