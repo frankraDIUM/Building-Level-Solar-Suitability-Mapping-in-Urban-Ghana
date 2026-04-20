@@ -43,6 +43,7 @@ Summary
   
   The result is an interactive Streamlit dashboard that supports multi-scale decision-making, from individual building investment to neighborhood-level policy planning.
 
+
 Key outcomes:
 
   - Analyzed 632,195 buildings in the Greater Accra area.
@@ -63,6 +64,7 @@ Detect and characterize individual building rooftops using open building footpri
   - Provide an intuitive, interactive dashboard for stakeholders (households, SMEs, policymakers, investors).
 
 *2. Methodology & Pipeline*
+
 Phase 1–2: Data Acquisition & Building Footprints
 
   Combined Microsoft Global Building Footprints and Google Open Buildings datasets, 
