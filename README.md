@@ -1,7 +1,7 @@
-# 🌞 Building Level Solar Suitability Mapping and Investment Potential in Urban Ghana
+# 🌞 Building-Level Solar Suitability Mapping in Urban Ghana
 **Accra Solar Rooftop Suitability & Investment Dashboard**
 
-A geospatial AI pipeline for building-level solar potential assessment in Central Accra, Ghana.
+A geospatial AI pipeline and interactive decision-support tool for urban solar potential in Accra, Ghana.
 
 ---
 Dashboard Preview
@@ -13,107 +13,81 @@ Dashboard Preview
 ---
 
 
-1. Project Objective
-   Develop a scalable geospatial AI pipeline to:
-   - Detect and characterize individual building rooftops.
-   - Assess solar suitability per building using roof geometry and environmental factors.
-   - Estimate annual solar energy generation (kWh).
-   - Calculate economic viability (payback period and Net Present Value).
-   - Deliver an interactive dashboard for decision-makers.
+*1. Objectives*
 
-2. Study Area
-   
-   Location: Central Accra, Ghana.
-   
-   Scope: Pilot area covering 632,195 buildings.
-   
-   Focus: Dense urban environment with high solar potential and unreliable grid power.
+Detect and characterize individual building rooftops using open building footprint datasets.
+  - Assess technical solar suitability using slope, aspect, usable roof area, and shadow effects.
+  - Estimate annual energy generation with performance losses and shadow attenuation.
+  - Perform detailed economic analysis (payback period, NPV) with real-time sensitivity.
+  - Aggregate results at hexagonal grid level for policy insights and performance.
+  - Identify spatial investment hotspots and priority zones.
+  - Provide an intuitive, interactive dashboard for stakeholders (households, SMEs, policymakers, investors).
 
-3. Methodology & Pipeline
+*2. Methodology & Pipeline*
+Phase 1–2: Data Acquisition & Building Footprints
+Combined Microsoft Global Building Footprints and Google Open Buildings datasets, filtered to Accra bounding box, resulting in 632,195 valid building polygons.
+Phase 3–4: Terrain & Solar Resource
 
-   Phase 1: Building Footprints
+Copernicus DEM (30m) → derived slope and aspect at building centroids.
+NASA POWER API (2020–2025) → annual GHI of ~1,779 kWh/m²/year used as baseline.
 
-   - Combined Google Open Buildings and Microsoft Global Building Footprints datasets.
-   - Filtered to central Accra bounding box.
-   
-   Final dataset: 632,195 building polygons
+Phase 5: Rooftop Geometry & Suitability Modeling
 
-   Phase 2: Elevation Analysis
+Accurate footprint area calculated in UTM Zone 30N.
+Roof utilization factor based on slope (0.92 for ≤15°, decaying for steeper roofs).
+Usable area = footprint × 0.82 (edge/obstacle buffer) × utilization factor.
+Weighted suitability score (slope 45%, aspect 30%, area 25%) with nonlinear scaling.
 
-   - Used Copernicus DEM GLO-30
-   - Derived slope and aspect rasters
-   - Extracted per-building slope and aspect
+Phase 6: Shadow Modeling & Energy Adjustment
 
-   Phase 3: Solar Irradiance
+Empirical height proxy: height_m = clip(sqrt(area) × 0.65, 3, 45).
+Multi-angle shadow length (weighted 30°/45°/60° sun elevations).
+Shadow factor = exp(-weighted_shadow / 120).
+Adjusted solar generation: usable_area × GHI × efficiency (20.5%) × PR (0.76) × shadow_factor.
 
-   Fetched NASA POWER data (2020–2025)
-   
-   Annual GHI: 1,779 kWh/m²/year (used as reference for methodology justification)
+Phase 7: Economic & Financial Modeling
 
-   Phase 4: Rooftop Geometry & Suitability
+System size derived from usable area.
+Realistic cost structure (fixed + variable per kW with bulk discount).
+Dynamic NPV and payback with user-controlled tariff, discount rate, self-consumption, and 0.5% annual degradation.
+Priority Score = 0.4×Solar Index + 0.4×Normalized NPV + 0.2×Normalized Hotspot Score (+ risk penalty for long payback).
 
-   - Calculated accurate footprint area in UTM Zone 30N
-   - Introduced roof utilization factor based on slope
-   - Developed weighted suitability score (0–100):
+Phase 8: Spatial Aggregation & Hotspot Analysis
 
-     Slope: 45%
-   
-     Aspect: 30%
+H3 hexagonal grid (resolution 9) for aggregation (~3,135 hexes).
+Metrics per hex: total solar, avg NPV, avg solar index, building count.
+Getis-Ord Gi* hotspot detection on normalized solar-per-building to identify statistically significant clusters.
 
-     Usable area: 25%
+Phase 9: Interactive Dashboard
+Built with Streamlit + Folium, featuring:
 
-   - Added nonlinear area scoring with diminishing returns
+Four synchronized map views: All Buildings (point markers), Solar Potential Density (H3 hex choropleth), Spatial Clusters (Gi* hotspots), Top Investment Opportunities (top 10% priority buildings).
+Real-time ROI simulator with sliders.
+Dynamic metrics, priority scoring, and GIS export (GeoJSON).
+Loading spinners and performance optimizations (caching, downcasting, sampling).
 
-   Phase 5: Energy Generation & Economic Analysis
+*3. Key Results*
 
-   - Realistic per-kW yield: 1,280 kWh/kW/year (derived from NASA GHI with local derating)
-   - System sizing with practical cap (max 35 kW)
-   - Cost model: fixed baseline + variable per kW + bulk discount for larger systems
-   - Included self-consumption rate (65%), O&M costs, and panel degradation (0.6%/year)
-   
-   Calculated:
-   - Annual energy generation
-   - Simple payback period
-   - Net Present Value (NPV) using 8.5% discount rate over 25 years
+Total potential generation: ~6,000+ GWh/year (shadow-adjusted) across Accra.
+Economic viability: Average simple payback ~7 years; many buildings show strong positive NPV.
+High-potential buildings: ~81.5% have positive NPV under baseline assumptions.
+Spatial insights: 44 hexagons identified as statistically significant hotspots (90%+ confidence).
+Investment prioritization: Priority Score combines technical suitability, financial return, and spatial clustering for ranked decision support.
 
+*4. Technical Implementation Highlights*
 
-   Final Results:
+  - Scalability: Handles 632k+ buildings efficiently through vectorization, H3 aggregation, and caching.
+  - Realism: Incorporates terrain constraints, shadow effects, degradation, O&M costs, and user-driven sensitivity analysis.
+  - Multi-scale: Building-level detail + hexagonal policy view + hotspot detection.
+  - User-centric: Interactive sliders, multiple synchronized views, export functionality, and clear legends.
+  - Open & Reproducible: Relies on open datasets (Microsoft/Google buildings, Copernicus DEM, NASA POWER) and open-source tools (GeoPandas, Folium, H3, esda).
 
-   - Average payback period: 7.0 years
-   - Average NPV: +55,594 GHS per building
-   - Positive NPV rate: 81.5% (515,007 buildings)
-   - Total Year-1 generation potential: 6,122 GWh/year
+*5. Limitations & Future Work*
 
-   Phase 6: Interactive Dashboard
+  - Shadow model uses simplified height proxy and exponential decay (no full neighbor ray-tracing).
+  - Slope/aspect derived from terrain DEM (not true roof pitch).
+  - Assumes full self-consumption or fixed export rates.
+  - Future enhancements could include: true DSM-based shading, net-metering scenarios, inflation-adjusted tariffs, and machine learning for suitability prediction.
 
-   Built with Streamlit
-   
-   Features:
-   - Dynamic filters (suitability score, payback period, NPV)
-   - Interactive map with clustering and legend
-   - Distribution charts
-   - Economic insights
-   - Top 20 investment opportunities
-   - CSV download of filtered results
-
-
-4. Technologies Used
-
-   Python, GeoPandas, Rasterio, Folium, Streamlit, Plotly
-   
-   NASA POWER API, Copernicus DEM
-   
-   Google Earth Engine (for initial building footprints)
-
-6. Key Files Produced
-
-   - accra_buildings_solar_roi_final.gpkg — Main geospatial dataset (632,195 buildings)
-   - accra_solar_final_summary.csv — Clean tabular summary
-   - 08_streamlit_dashboard.py — Interactive web dashboard
-
-6. Key Insights
-
-   - Solar rooftop systems show strong economic viability across most of central Accra.
-   - Roof slope and usable area are the dominant factors influencing suitability and returns.
-   - Realistic modeling (self-consumption, degradation, O&M) significantly impacts payback and NPV.
-   - The pipeline is modular and scalable to other urban areas in Ghana.
+*6. Conclusion*
+This project demonstrates a practical, scalable approach to urban solar potential assessment tailored to Ghanaian conditions (unreliable grid, high electricity costs, rapid urbanization). The resulting dashboard serves as a powerful decision-support tool for households, businesses, utilities, and policymakers. It bridges technical geospatial analysis with economic realism and spatial intelligence, providing actionable insights for accelerating solar adoption in Accra and similar African cities.
