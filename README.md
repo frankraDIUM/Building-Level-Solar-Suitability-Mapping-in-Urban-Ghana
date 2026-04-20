@@ -8,9 +8,20 @@ A geospatial AI pipeline and interactive decision-support tool for urban solar p
 Dashboard Preview
 
 <p align="center">
-  <img src="https://github.com/frankraDIUM/Building-Level-Solar-Suitability-Mapping-in-Urban-Ghana/blob/main/solar.gif" />
+  <img src="https://github.com/frankraDIUM/Building-Level-Solar-Suitability-Mapping-in-Urban-Ghana/blob/main/Solar.gif" />
 </p>
 
+<p align="center">
+  <img src="https://github.com/frankraDIUM/Building-Level-Solar-Suitability-Mapping-in-Urban-Ghana/blob/main/Solar.gif" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/frankraDIUM/Building-Level-Solar-Suitability-Mapping-in-Urban-Ghana/blob/main/Solar.gif" />
+</p>
+
+<p align="center">
+  <img src="https://github.com/frankraDIUM/Building-Level-Solar-Suitability-Mapping-in-Urban-Ghana/blob/main/Solar.gif" />
+</p>
 ---
 
 Summary
